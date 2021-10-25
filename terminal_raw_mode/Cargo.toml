@@ -1,0 +1,8 @@
+[package]
+name = "terminal_raw_mode"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+termios = "0.3"
+nix = "0.17.0"
