@@ -4,8 +4,7 @@ use std::io::prelude::*;
 
 fn get_terminal_size() -> (u16, u16) {
     // rows, columns
-    use libc::ioctl;
-    use libc::TIOCGWINSZ;
+    use nix::libc::{ioctl, TIOCGWINSZ};
 
     let mut winsize = Winsize {
         ws_row: 0,
@@ -107,10 +106,8 @@ fn draw_ui() {
     println!("\u{1b}[?25l"); // hide cursor
     let primary_text = "I am some arbitrary text";
     let secondary_text = "Me too! Here's a shrug emoticon: ¯\\_(ツ)_/¯";
-    let min_side_width = std::cmp::max(
-        primary_text.chars().count(),
-        secondary_text.chars().count()
-    ) as u16 + 2; // 2 for the rect borders
+    let min_side_width =
+        std::cmp::max(primary_text.chars().count(), secondary_text.chars().count()) as u16 + 2; // 2 for the rect borders
     let (rows, columns) = get_terminal_size();
     if columns / 2 > min_side_width {
         side_by_side_ui(rows, columns, primary_text, secondary_text);
@@ -123,13 +120,7 @@ fn draw_ui() {
 }
 
 fn main() {
-    let mut signals = Signals::new(&[
-        SIGWINCH,
-        SIGTERM,
-        SIGINT,
-        SIGQUIT,
-        SIGHUP
-    ]).unwrap();
+    let mut signals = Signals::new(&[SIGWINCH, SIGTERM, SIGINT, SIGQUIT, SIGHUP]).unwrap();
     draw_ui();
     for signal in signals.forever() {
         match signal {
